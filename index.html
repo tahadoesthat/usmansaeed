@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usman Saeed | Senior Infrastructure Manager</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Montserrat & Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0f172a', // Slate 900 - Deep Blue/Black
+                        secondary: '#3b82f6', // Blue 500 - Bright Blue
+                        accent: '#eff6ff', // Blue 50 - Very Light Blue
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Floating Blob Animation */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+
+        /* Scroll Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Stagger Delays */
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+
+        /* Toast Notification */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+
+        #toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-700 bg-white selection:bg-secondary selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toast"><i class="fa-solid fa-circle-check text-green-400 mr-2"></i> Copied to clipboard!</div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center">
+                    <a href="#" class="font-heading font-bold text-2xl text-primary tracking-tight hover:text-secondary transition-colors duration-300">
+                        USMAN<span class="text-secondary">.</span>
+                    </a>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8 items-center">
+                    <a href="#about" class="font-heading font-semibold text-sm hover:text-secondary transition-colors">ABOUT</a>
+                    <a href="#skills" class="font-heading font-semibold text-sm hover:text-secondary transition-colors">SKILLS</a>
+                    <a href="#experience" class="font-heading font-semibold text-sm hover:text-secondary transition-colors">EXPERIENCE</a>
+                    <a href="#contact" class="font-heading font-semibold text-sm hover:text-secondary transition-colors">CONTACT</a>
+                    
+                    <!-- RESUME DOWNLOAD BUTTON -->
+                    <!-- INSTRUCTIONS: Replace the href below with your GitHub Raw PDF link -->
+                    <a href="#" download class="px-5 py-2.5 bg-secondary text-white font-heading font-bold text-sm rounded-full shadow-lg hover:bg-blue-600 transition-all hover:shadow-blue-200 transform hover:-translate-y-0.5 flex items-center gap-2 group">
+                        <i class="fa-solid fa-download group-hover:animate-bounce"></i> Resume
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-primary hover:text-secondary focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-100 absolute w-full shadow-xl transition-all duration-300">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#about" class="block py-3 font-heading font-semibold text-primary hover:text-secondary">About</a>
+                <a href="#skills" class="block py-3 font-heading font-semibold text-primary hover:text-secondary">Skills</a>
+                <a href="#experience" class="block py-3 font-heading font-semibold text-primary hover:text-secondary">Experience</a>
+                <a href="#contact" class="block py-3 font-heading font-semibold text-primary hover:text-secondary">Contact</a>
+                <a href="#" class="block w-full text-center mt-4 px-5 py-3 bg-secondary text-white font-heading font-bold rounded-lg hover:bg-blue-600">
+                    Download Resume
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="about" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50">
+        <!-- Decorative blobs -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-100 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="text-center max-w-4xl mx-auto">
+                <div class="reveal inline-block px-4 py-1.5 mb-6 text-xs font-bold tracking-wider text-blue-800 uppercase bg-blue-100 rounded-full font-heading">
+                    System Administrator & Infrastructure Manager
+                </div>
+                <h1 class="reveal delay-100 text-5xl md:text-7xl font-heading font-extrabold text-primary mb-6 leading-tight">
+                    Building Robust <span class="text-secondary">Cloud Infrastructure</span>
+                </h1>
+                <p class="reveal delay-200 text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+                    Over 15 years of experience architecting secure networks, managing DevOps pipelines, and implementing private cloud solutions for high-availability enterprise environments.
+                </p>
+                <div class="reveal delay-300 flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#contact" class="px-8 py-4 bg-primary text-white font-heading font-bold rounded-lg shadow-lg hover:bg-slate-800 transition-all transform hover:-translate-y-1 hover:shadow-xl">
+                        Get in Touch
+                    </a>
+                    <a href="#experience" class="px-8 py-4 bg-white text-primary border-2 border-slate-200 font-heading font-bold rounded-lg hover:border-secondary hover:text-secondary transition-all transform hover:-translate-y-1">
+                        View Work
+                    </a>
+                </div>
+                
+                <div class="reveal delay-300 mt-12 flex justify-center space-x-6 text-slate-400">
+                    <a href="#" class="hover:text-secondary transition-all duration-300 hover:scale-110 text-2xl"><i class="fa-brands fa-linkedin"></i></a>
+                    <a href="#" class="hover:text-black transition-all duration-300 hover:scale-110 text-2xl"><i class="fa-brands fa-github"></i></a>
+                    <a href="mailto:usmansaeed1@hotmail.com" class="hover:text-secondary transition-all duration-300 hover:scale-110 text-2xl"><i class="fa-solid fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="reveal text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Technical Expertise</h2>
+                <div class="w-20 h-1.5 bg-secondary mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Cloud & DevOps -->
+                <div class="reveal delay-100 bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group cursor-default">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-secondary text-2xl mb-6 group-hover:scale-110 group-hover:bg-secondary group-hover:text-white transition-all duration-300">
+                        <i class="fa-solid fa-cloud"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold text-primary mb-4">Cloud & DevOps</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-secondary text-sm"></i> <span>OpenStack (Private Cloud)</span></li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-secondary text-sm"></i> <span>AWS & Virtualization</span></li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-secondary text-sm"></i> <span>Docker & Kubernetes</span></li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-secondary text-sm"></i> <span>CI/CD (Jenkins)</span></li>
+                    </ul>
+                </div>
+
+                <!-- Systems & OS -->
+                <div class="reveal delay-200 bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group cursor-default">
+                    <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 text-2xl mb-6 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                        <i class="fa-brands fa-linux"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold text-primary mb-4">Systems & OS</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-indigo-600 text-sm"></i> <span>RedHat / CentOS / Ubuntu</span></li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-indigo-600 text-sm"></i> <span>Windows Server 2012-2019</span></li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-indigo-600 text-sm"></i> <span>Active Directory & GPO</span></li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-indigo-600 text-sm"></i> <span>Apache / Nginx / IIS</span></li>
+                    </ul>
+                </div>
+
+                <!-- Networking & Security -->
+                <div class="reveal delay-300 bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 group cursor-default">
+                    <div class="w-14 h-14 bg-teal-100 rounded-xl flex items-center justify-center text-teal-600 text-2xl mb-6 group-hover:scale-110 group-hover:bg-teal-600 group-hover:text-white transition-all duration-300">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold text-primary mb-4">Network & Security</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-teal-600 text-sm"></i> <span>VPN (Site-to-Site/Remote)</span></li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-teal-600 text-sm"></i> <span>Firewalls (iptables, pfSense)</span></li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-teal-600 text-sm"></i> <span>Routing (OSPF, EIGRP)</span></li>
+                        <li class="flex items-center gap-3"><i class="fa-solid fa-check text-teal-600 text-sm"></i> <span>Monitoring (Nagios, PRTG)</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="py-20 bg-accent">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="reveal text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-primary mb-4">Professional Experience</h2>
+                <div class="w-20 h-1.5 bg-secondary mx-auto rounded-full"></div>
+            </div>
+
+            <!-- Timeline Item 1 -->
+            <div class="relative pl-8 md:pl-0">
+                <!-- Vertical Line -->
+                <div class="hidden md:block absolute left-1/2 -ml-0.5 w-1 h-full bg-slate-200"></div>
+                
+                <div class="reveal delay-100 flex flex-col md:flex-row items-center justify-between w-full mb-12">
+                    <div class="order-1 md:w-5/12 mb-6 md:mb-0 md:text-right">
+                        <span class="inline-block px-3 py-1 bg-white border border-secondary text-secondary rounded-full text-xs font-bold mb-2">
+                            Mar 2010 - Present
+                        </span>
+                        <h3 class="text-xl font-heading font-bold text-primary">System Administrator & Assistant Manager MIS</h3>
+                        <p class="text-slate-600 font-semibold">Dar-e-Arqam Schools System</p>
+                        <p class="text-slate-500 text-sm mt-1"><i class="fa-solid fa-location-dot mr-1"></i> Lahore, Pakistan</p>
+                    </div>
+                    
+                    <div class="z-20 flex items-center order-1 bg-secondary shadow-xl w-10 h-10 rounded-full md:order-1 justify-center border-4 border-white absolute left-0 md:relative md:left-0 -translate-x-1/2 md:translate-x-0 transition-transform duration-300 hover:scale-125">
+                        <div class="w-3 h-3 bg-white rounded-full"></div>
+                    </div>
+                    
+                    <div class="order-1 md:w-5/12 bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-lg transition-shadow duration-300">
+                        <ul class="space-y-2 text-sm text-slate-600">
+                            <li class="flex gap-2">
+                                <span class="text-secondary mt-1">▹</span>
+                                <span>Deployed Private Cloud using <strong>OpenStack</strong> on CentOS 7.</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-secondary mt-1">▹</span>
+                                <span>Modernized operations by implementing Odoo ERP via <strong>Docker containers</strong>.</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-secondary mt-1">▹</span>
+                                <span>Hardened security with Linux Firewalls & Transparent Squid Proxies.</span>
+                            </li>
+                            <li class="flex gap-2">
+                                <span class="text-secondary mt-1">▹</span>
+                                <span>Managed full lifecycle of large-scale Windows/Linux environments.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                <div class="reveal delay-200 flex flex-col md:flex-row items-center justify-between w-full">
+                    <div class="order-1 md:w-5/12 md:order-3 mb-6 md:mb-0">
+                         <span class="inline-block px-3 py-1 bg-white border border-slate-300 text-slate-500 rounded-full text-xs font-bold mb-2">
+                            Feb 2008 - Apr 2010
+                        </span>
+                        <h3 class="text-xl font-heading font-bold text-primary">Junior System Administrator</h3>
+                        <p class="text-slate-600 font-semibold">Nlink Solutions</p>
+                        <p class="text-slate-500 text-sm mt-1"><i class="fa-solid fa-location-dot mr-1"></i> Pakistan</p>
+                    </div>
+                    
+                    <div class="z-20 flex items-center order-1 bg-slate-700 shadow-xl w-10 h-10 rounded-full md:order-2 justify-center border-4 border-white absolute left-0 md:relative md:left-0 -translate-x-1/2 md:translate-x-0 transition-transform duration-300 hover:scale-125">
+                        <div class="w-3 h-3 bg-white rounded-full"></div>
+                    </div>
+                    
+                    <div class="order-1 md:w-5/12 md:order-1 md:text-right bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:shadow-lg transition-shadow duration-300">
+                        <ul class="space-y-2 text-sm text-slate-600 md:flex md:flex-col md:items-end">
+                            <li class="flex gap-2 md:flex-row-reverse">
+                                <span class="text-secondary mt-1">▹</span>
+                                <span>Administered Windows Server 2003/2008 environments.</span>
+                            </li>
+                            <li class="flex gap-2 md:flex-row-reverse">
+                                <span class="text-secondary mt-1">▹</span>
+                                <span>Implemented comprehensive backup & disaster recovery solutions.</span>
+                            </li>
+                            <li class="flex gap-2 md:flex-row-reverse">
+                                <span class="text-secondary mt-1">▹</span>
+                                <span>Managed network security, antivirus, and spam filtering protocols.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Banner -->
+    <section class="py-16 bg-primary text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="reveal text-2xl font-heading font-bold text-center mb-10 opacity-90">Certifications & Education</h2>
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="reveal delay-100 flex items-center gap-3 px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors cursor-default">
+                    <i class="fa-solid fa-certificate text-secondary"></i>
+                    <span class="font-semibold">RedHat Certified Engineer (RHCE)</span>
+                </div>
+                <div class="reveal delay-200 flex items-center gap-3 px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors cursor-default">
+                    <i class="fa-solid fa-certificate text-secondary"></i>
+                    <span class="font-semibold">RedHat Certified System Admin (RHCSA)</span>
+                </div>
+                <div class="reveal delay-300 flex items-center gap-3 px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors cursor-default">
+                    <i class="fa-brands fa-aws text-secondary"></i>
+                    <span class="font-semibold">DevOps & AWS Training</span>
+                </div>
+                <div class="reveal delay-300 flex items-center gap-3 px-6 py-3 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-colors cursor-default">
+                    <i class="fa-solid fa-graduation-cap text-secondary"></i>
+                    <span class="font-semibold">BS Computer Science</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="reveal text-3xl md:text-4xl font-heading font-bold text-primary mb-6">Let's Discuss Your Infrastructure</h2>
+            <p class="reveal delay-100 text-slate-600 mb-12 text-lg">
+                I am currently open to opportunities in System Administration, Cloud Engineering, and Infrastructure Management.
+            </p>
+            
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+                <!-- Phone -->
+                <a href="tel:+923008856138" onclick="handleCopy(event, '+923008856138')" class="reveal delay-100 flex flex-col items-center p-6 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors hover:shadow-lg transform hover:-translate-y-1 group">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-secondary mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <span class="font-heading font-bold text-primary mb-1">Call Me</span>
+                    <span class="text-slate-600">+923008856138</span>
+                    <span class="text-xs text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-2 font-bold">Click to Copy</span>
+                </a>
+                
+                <!-- Email -->
+                <a href="mailto:usmansaeed1@hotmail.com" onclick="handleCopy(event, 'usmansaeed1@hotmail.com')" class="reveal delay-200 flex flex-col items-center p-6 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors hover:shadow-lg transform hover:-translate-y-1 group">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-secondary mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <span class="font-heading font-bold text-primary mb-1">Email Me</span>
+                    <span class="text-slate-600">usmansaeed1@hotmail.com</span>
+                    <span class="text-xs text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-2 font-bold">Click to Copy</span>
+                </a>
+                
+                <!-- Location -->
+                <a href="https://www.google.com/maps/search/?api=1&query=Lahore+Pakistan" target="_blank" class="reveal delay-300 flex flex-col items-center p-6 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors hover:shadow-lg transform hover:-translate-y-1 group">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-secondary mb-4 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <span class="font-heading font-bold text-primary mb-1">Location</span>
+                    <span class="text-slate-600">Lahore, Pakistan</span>
+                    <span class="text-xs text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-2 font-bold">View on Map</span>
+                </a>
+            </div>
+
+            <p class="reveal delay-300 text-slate-400 text-sm">
+                &copy; <script>document.write(new Date().getFullYear())</script> Usman Saeed. All rights reserved.
+            </p>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        // Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+        
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                menu.classList.add('hidden');
+            });
+        });
+
+        // Smart Contact Handler (Click to Copy + Default Link)
+        function handleCopy(e, text) {
+            // Copy to clipboard
+            navigator.clipboard.writeText(text).then(() => {
+                showToast();
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+            // We let the default link behavior (tel/mailto) happen as well
+            // so it works on mobile phones naturally.
+        }
+
+        // Toast Notification
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
+        // Scroll Animation Observer
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
